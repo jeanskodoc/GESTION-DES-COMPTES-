@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Comptes Enseignants et Élèves</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c 0%, #b21f1f 50%, #fdbb2d 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 15px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            color: #1a2a6c;
+        }
+        
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .whatsapp {
+            display: inline-flex;
+            align-items: center;
+            background-color: #25D366;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 5px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            font-size: 14px;
+        }
+        
+        .whatsapp:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4);
+        }
+        
+        .whatsapp i {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #7f8c8d;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            color: #1a2a6c;
+            border-bottom: 3px solid #1a2a6c;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .form-section, .history-section {
+            width: 100%;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        input[type="text"], input[type="email"], select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus, input[type="email"]:focus, select:focus {
+            border-color: #1a2a6c;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(26, 42, 108, 0.1);
+        }
+        
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        button {
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .primary-btn {
+            background: linear-gradient(to right, #1a2a6c, #2c3e50);
+        }
+        
+        .secondary-btn {
+            background: linear-gradient(to right, #b21f1f, #c0392b);
+        }
+        
+        .filter-btn {
+            background: linear-gradient(to right, #00b09b, #96c93d);
+        }
+        
+        .whatsapp-btn {
+            background: #25D366;
+        }
+        
+        .credentials-display {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(to right, #f8f9fa, #e9ecef);
+            border-radius: 10px;
+            border: 2px dashed #1a2a6c;
+        }
+        
+        .credentials {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 15px 0;
+            font-family: monospace;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        
+        .credential-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .credential-item:last-child {
+            border-bottom: none;
+        }
+        
+        .credential-label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .credential-value {
+            color: #e74c3c;
+            font-family: monospace;
+            letter-spacing: 1px;
+        }
+        
+        .send-whatsapp {
+            margin: 15px 0;
+        }
+        
+        .expiration {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff4e6;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 5px solid #e67e22;
+        }
+        
+        .timer {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e67e22;
+            margin: 10px 0;
+            font-family: monospace;
+            letter-spacing: 1px;
+        }
+        
+        .timer-units {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .timer-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            min-width: 70px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .timer-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #e67e22;
+        }
+        
+        .timer-label {
+            font-size: 11px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+        
+        .validity-info {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #27ae60;
+        }
+        
+        .history-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .history-header {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .history-title {
+            color: #2c3e50;
+            font-size: 22px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ddd;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .filters {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .history-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #1a2a6c;
+        }
+        
+        .history-item.teacher {
+            border-left: 4px solid #1a2a6c;
+        }
+        
+        .history-item.student {
+            border-left: 4px solid #fdbb2d;
+        }
+        
+        .history-item.expired {
+            opacity: 0.7;
+        }
+        
+        .account-type {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .type-teacher {
+            background-color: #1a2a6c;
+            color: white;
+        }
+        
+        .type-student {
+            background-color: #fdbb2d;
+            color: #333;
+        }
+        
+        .history-name {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+        
+        .history-credentials {
+            font-family: monospace;
+            font-size: 14px;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .history-timer {
+            color: #e67e22;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .history-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            font-size: 14px;
+            border-radius: 5px;
+            width: auto;
+        }
+        
+        .check-btn {
+            background: #3498db;
+        }
+        
+        .history-empty {
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+            padding: 20px;
+        }
+        
+        .disclaimer {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            border-left: 5px solid #3498db;
+        }
+        
+        footer {
+            margin-top: 25px;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        @media (min-width: 768px) {
+            .container {
+                padding: 30px;
+            }
+            
+            .main-content {
+                flex-direction: row;
+            }
+            
+            .form-section, .history-section {
+                width: 48%;
+            }
+            
+            .form-row {
+                flex-direction: row;
+            }
+            
+            .form-row .form-group {
+                flex: 1;
+            }
+            
+            .buttons {
+                flex-direction: row;
+            }
+            
+            .filters {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+            
+            .filter-group {
+                flex: 1;
+                margin-right: 10px;
+            }
+            
+            .history-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-user-graduate"></i>
+                EDUC ACCESS
+            </div>
+            <p>Gestion des comptes enseignants et élèves</p>
+            <div class="contact-info">
+                <span>Support technique:</span>
+                <a href="https://wa.me/22892871605" class="whatsapp">
+                    <i class="fab fa-whatsapp"></i>
+                    +228 92 87 16 05
+                </a>
+            </div>
+        </header>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="teacher">Enseignant</div>
+            <div class="tab" data-tab="student">Élève</div>
+            <div class="tab" data-tab="history">Historique</div>
+        </div>
+        
+        <div class="tab-content active" id="teacher-tab">
+            <div class="main-content">
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="teacher-name"><i class="fas fa-chalkboard-teacher"></i> Nom complet de l'enseignant</label>
+                        <input type="text" id="teacher-name" placeholder="Nom et prénom de l'enseignant" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="teacher-email"><i class="fas fa-envelope"></i> Email de l'enseignant</label>
+                        <input type="email" id="teacher-email" placeholder="Adresse email de l'enseignant" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="teacher-subject"><i class="fas fa-book"></i> Matière enseignée</label>
+                        <select id="teacher-subject">
+                            <option value="Mathématiques">Mathématiques</option>
+                            <option value="Français">Français</option>
+                            <option value="Histoire-Géographie">Histoire-Géographie</option>
+                            <option value="Sciences">Sciences</option>
+                            <option value="Anglais">Anglais</option>
+                            <option value="Physique-Chimie">Physique-Chimie</option>
+                            <option value="SV">Sciences de la Vie</option>
+                            <option value="Philosophie">Philosophie</option>
+                        </select>
+                    </div>
+                    
+                    <div class="buttons">
+                        <button id="generate-teacher-btn" class="primary-btn">
+                            <i class="fas fa-user-tie"></i> Générer compte enseignant
+                        </button>
+                    </div>
+                    
+                    <div class="credentials-display">
+                        <p>Compte enseignant généré:</p>
+                        <div id="teacher-credentials" class="credentials">
+                            <div class="credential-item">
+                                <span class="credential-label">Nom:</span>
+                                <span id="teacher-name-value" class="credential-value">---</span>
+                            </div>
+                            <div class="credential-item">
+                                <span class="credential-label">Email:</span>
+                                <span id="teacher-email-value" class="credential-value">---</span>
+                            </div>
+                            <div class="credential-item">
+                                <span class="credential-label">Matière:</span>
+                                <span id="teacher-subject-value" class="credential-value">---</span>
+                            </div>
+                            <div class="credential-item">
+                                <span class="credential-label">Identifiant:</span>
+                                <span id="teacher-username-value" class="credential-value">---</span>
+                            </div>
+                            <div class="credential-item">
+                                <span class="credential-label">Mot de passe:</span>
+                                <span id="teacher-password-value" class="credential-value">---</span>
+                            </div>
+                        </div>
+                        
+                        <div class="validity-info">
+                            <i class="fas fa-calendar-check"></i> Ce compte est valable pendant 30 jours
+                        </div>
+                        
+                        <div class="send-whatsapp">
+                            <button id="whatsapp-teacher-btn" class="whatsapp-btn">
+                                <i class="fab fa-whatsapp"></i> Envoyer par WhatsApp
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="student-tab">
+            <div class="main-content">
+                <div class="form-section">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="student-name"><i class="fas fa-user-graduate"></i> Nom de l'élève</label>
+                            <input type="text" id="student-name" placeholder="Nom complet de l'élève" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="student-class"><i class="fas fa-school"></i> Classe</label>
+                            <select id="student-class">
+                                <option value="6ème">6ème</option>
+                                <option value="5ème">5ème</option>
+                                <option value="4ème">4ème</option>
+                                <option value="3ème">3ème</option>
+                                <option value="2nde">2nde</option>
+                                <option value="1ère">1ère</option>
+                                <option value="Tle">Terminale</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="assigned-teacher"><i class="fas fa-chalkboard-teacher"></i> Enseignant assigné</label>
+                        <select id="assigned-teacher">
+                            <option value="">Sélectionner un enseignant</option>
+                        </select>
+                    </div>
+                    
+                    <div class="buttons">
+                        <button id="generate-student-btn" class="primary-btn">
+                            <i class="fas fa-user-graduate"></i> Générer compte élève
+                        </button>
+                    </div>
+                    
+                    <div class="credentials-display">
+                        <p>Compte élève généré:</p>
+                        <div id="student-credentials" class="credentials">
+                            <div class="credential-item">
+                                <span class="credential-label">Nom élève:</span>
+                                <span id="student-name-value" class="credential-value">---</span>
+                            </div>
+                            <div class="credential-item">
+                                <span class="credential-label">Classe:</span>
+                                <span id="student-class-value" class="credential-value">---</span>
+                            </div>
+                            <div class="credential-item">
+                                <span class="credential-label">Enseignant:</span>
+                                <span id="student-teacher-value" class="credential-value">---</span>
+                            </div>
+                            <div class="credential-item">
+                                <span class="credential-label">Identifiant:</span>
+                                <span id="student-username-value" class="credential-value">---</span>
+                            </div>
+                            <div class="credential-item">
+                                <span class="credential-label">Mot de passe:</span>
+                                <span id="student-password-value" class="credential-value">---</span>
+                            </div>
+                        </div>
+                        
+                        <div class="validity-info">
+                            <i class="fas fa-calendar-check"></i> Ce compte est valable pendant 30 jours
+                        </div>
+                        
+                        <div class="send-whatsapp">
+                            <button id="whatsapp-student-btn" class="whatsapp-btn">
+                                <i class="fab fa-whatsapp"></i> Envoyer par WhatsApp
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="history-tab">
+            <div class="history-section">
+                <div class="history-header">
+                    <h2 class="history-title"><i class="fas fa-history"></i> Historique des Comptes</h2>
+                    
+                    <div class="filters">
+                        <div class="filter-group">
+                            <label for="account-filter"><i class="fas fa-filter"></i> Filtrer par type</label>
+                            <select id="account-filter">
+                                <option value="all">Tous les comptes</option>
+                                <option value="teacher">Enseignants seulement</option>
+                                <option value="student">Élèves seulement</option>
+                            </select>
+                        </div>
+                        
+                        <button id="filter-btn" class="filter-btn">
+                            <i class="fas fa-search"></i> Filtrer
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="history-list">
+                    <div class="history-empty">Aucun compte généré pour le moment</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="disclaimer">
+            <p><strong>Important:</strong> Tous les comptes sont valables pendant 30 jours à compter de leur génération. Après expiration, vous devrez générer de nouveaux identifiants.</p>
+            <p class="whatsapp-info">Pour toute assistance, contactez le support via WhatsApp au <strong>+228 92 87 16 05</strong>.</p>
+        </div>
+        
+        <footer>
+            <p>© 2023 EDUC ACCESS - Tous droits réservés</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements des onglets
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            // Gestion des onglets
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    
+                    // Désactiver tous les onglets et contenus
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // Activer l'onglet et le contenu sélectionnés
+                    tab.classList.add('active');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                    
+                    // Si on ouvre l'onglet élève, mettre à jour la liste des enseignants
+                    if (tabId === 'student') {
+                        updateTeacherDropdown();
+                    }
+                });
+            });
+            
+            // Références aux éléments du formulaire enseignant
+            const generateTeacherBtn = document.getElementById('generate-teacher-btn');
+            const whatsappTeacherBtn = document.getElementById('whatsapp-teacher-btn');
+            const teacherNameInput = document.getElementById('teacher-name');
+            const teacherEmailInput = document.getElementById('teacher-email');
+            const teacherSubjectInput = document.getElementById('teacher-subject');
+            const teacherNameValue = document.getElementById('teacher-name-value');
+            const teacherEmailValue = document.getElementById('teacher-email-value');
+            const teacherSubjectValue = document.getElementById('teacher-subject-value');
+            const teacherUsernameValue = document.getElementById('teacher-username-value');
+            const teacherPasswordValue = document.getElementById('teacher-password-value');
+            
+            // Références aux éléments du formulaire élève
+            const generateStudentBtn = document.getElementById('generate-student-btn');
+            const whatsappStudentBtn = document.getElementById('whatsapp-student-btn');
+            const studentNameInput = document.getElementById('student-name');
+            const studentClassInput = document.getElementById('student-class');
+            const assignedTeacherInput = document.getElementById('assigned-teacher');
+            const studentNameValue = document.getElementById('student-name-value');
+            const studentClassValue = document.getElementById('student-class-value');
+            const studentTeacherValue = document.getElementById('student-teacher-value');
+            const studentUsernameValue = document.getElementById('student-username-value');
+            const studentPasswordValue = document.getElementById('student-password-value');
+            
+            // Références à l'historique
+            const filterBtn = document.getElementById('filter-btn');
+            const accountFilterInput = document.getElementById('account-filter');
+            const historyList = document.getElementById('history-list');
+            
+            // Caractères autorisés pour le mot de passe
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*';
+            
+            // Durée de validité (30 jours)
+            const expirationDays = 30;
+            let accountsHistory = [];
+            let currentFilter = 'all';
+            let currentTeacherAccount = null;
+            let currentStudentAccount = null;
+            
+            // Charger l'historique depuis le localStorage
+            loadHistory();
+            
+            // Événements pour les enseignants
+            generateTeacherBtn.addEventListener('click', generateTeacherAccount);
+            whatsappTeacherBtn.addEventListener('click', () => {
+                if (!currentTeacherAccount) {
+                    alert('Veuillez d\'abord générer un compte enseignant.');
+                    return;
+                }
+                sendWhatsApp(currentTeacherAccount, 'teacher');
+            });
+            
+            // Événements pour les élèves
+            generateStudentBtn.addEventListener('click', generateStudentAccount);
+            whatsappStudentBtn.addEventListener('click', () => {
+                if (!currentStudentAccount) {
+                    alert('Veuillez d\'abord générer un compte élève.');
+                    return;
+                }
+                sendWhatsApp(currentStudentAccount, 'student');
+            });
+            
+            // Événement pour le filtre
+            filterBtn.addEventListener('click', () => {
+                currentFilter = accountFilterInput.value;
+                updateHistoryDisplay();
+            });
+            
+            function generateTeacherAccount() {
+                // Validation des champs
+                const teacherName = teacherNameInput.value;
+                const teacherEmail = teacherEmailInput.value;
+                const teacherSubject = teacherSubjectInput.value;
+                
+                if (!teacherName || !teacherEmail || !teacherSubject) {
+                    alert('Veuillez remplir tous les champs obligatoires.');
+                    return;
+                }
+                
+                if (!validateEmail(teacherEmail)) {
+                    alert('Veuillez entrer une adresse email valide.');
+                    return;
+                }
+                
+                // Génération de l'identifiant et du mot de passe
+                const username = generateTeacherUsername(teacherName);
+                const password = generatePassword();
+                
+                // Affichage des identifiants
+                teacherNameValue.textContent = teacherName;
+                teacherEmailValue.textContent = teacherEmail;
+                teacherSubjectValue.textContent = teacherSubject;
+                teacherUsernameValue.textContent = username;
+                teacherPasswordValue.textContent = password;
+                
+                // Stocker le compte enseignant courant
+                currentTeacherAccount = {
+                    type: 'teacher',
+                    name: teacherName,
+                    email: teacherEmail,
+                    subject: teacherSubject,
+                    username: username,
+                    password: password,
+                    expiration: new Date().getTime() + (expirationDays * 24 * 60 * 60 * 1000),
+                    created: new Date().getTime()
+                };
+                
+                // Sauvegarder dans l'historique
+                saveToHistory(currentTeacherAccount);
+                
+                // Réinitialiser le formulaire
+                teacherNameInput.value = '';
+                teacherEmailInput.value = '';
+                teacherSubjectInput.value = 'Mathématiques';
+                
+                // Mettre à jour la liste des enseignants pour les élèves
+                updateTeacherDropdown();
+                
+                alert(`Compte enseignant généré avec succès pour ${teacherName}.`);
+            }
+            
+            function generateStudentAccount() {
+                // Validation des champs
+                const studentName = studentNameInput.value;
+                const studentClass = studentClassInput.value;
+                const assignedTeacher = assignedTeacherInput.value;
+                
+                if (!studentName || !studentClass || !assignedTeacher) {
+                    alert('Veuillez remplir tous les champs obligatoires.');
+                    return;
+                }
+                
+                // Génération de l'identifiant et du mot de passe
+                const username = generateStudentUsername(studentName, studentClass);
+                const password = generatePassword();
+                
+                // Récupérer le nom de l'enseignant
+                const teacherName = assignedTeacherInput.options[assignedTeacherInput.selectedIndex].text;
+                
+                // Affichage des identifiants
+                studentNameValue.textContent = studentName;
+                studentClassValue.textContent = studentClass;
+                studentTeacherValue.textContent = teacherName;
+                studentUsernameValue.textContent = username;
+                studentPasswordValue.textContent = password;
+                
+                // Stocker le compte élève courant
+                currentStudentAccount = {
+                    type: 'student',
+                    name: studentName,
+                    class: studentClass,
+                    teacher: teacherName,
+                    username: username,
+                    password: password,
+                    expiration: new Date().getTime() + (expirationDays * 24 * 60 * 60 * 1000),
+                    created: new Date().getTime()
+                };
+                
+                // Sauvegarder dans l'historique
+                saveToHistory(currentStudentAccount);
+                
+                // Réinitialiser le formulaire
+                studentNameInput.value = '';
+                studentClassInput.value = '6ème';
+                assignedTeacherInput.value = '';
+                
+                alert(`Compte élève généré avec succès pour ${studentName}.`);
+            }
+            
+            function generateTeacherUsername(teacherName) {
+                // Extraire les initiales du nom
+                const names = teacherName.split(' ');
+                let initials = '';
+                
+                for (let i = 0; i < Math.min(3, names.length); i++) {
+                    if (names[i].length > 0) {
+                        initials += names[i][0].toUpperCase();
+                    }
+                }
+                
+                // Ajouter "PROF" et un numéro aléatoire
+                const randomNum = Math.floor(100 + Math.random() * 900); // Numéro entre 100 et 999
+                return `PROF${initials}${randomNum}`;
+            }
+            
+            function generateStudentUsername(studentName, studentClass) {
+                // Extraire les initiales du nom
+                const names = studentName.split(' ');
+                let initials = '';
+                
+                for (let i = 0; i < Math.min(3, names.length); i++) {
+                    if (names[i].length > 0) {
+                        initials += names[i][0].toUpperCase();
+                    }
+                }
+                
+                // Ajouter la classe et un numéro aléatoire
+                const randomNum = Math.floor(100 + Math.random() * 900); // Numéro entre 100 et 999
+                return `ELEVE${initials}${studentClass}${randomNum}`;
+            }
+            
+            function generatePassword() {
+                let password = '';
+                for (let i = 0; i < 10; i++) {
+                    const randomIndex = Math.floor(Math.random() * characters.length);
+                    password += characters[randomIndex];
+                }
+                return password;
+            }
+            
+            function updateTeacherDropdown() {
+                // Vider le dropdown actuel
+                assignedTeacherInput.innerHTML = '<option value="">Sélectionner un enseignant</option>';
+                
+                // Récupérer tous les enseignants de l'historique
+                const teachers = accountsHistory.filter(account => account.type === 'teacher');
+                
+                // Ajouter chaque enseignant au dropdown
+                teachers.forEach(teacher => {
+                    const option = document.createElement('option');
+                    option.value = teacher.username;
+                    option.textContent = `${teacher.name} (${teacher.subject})`;
+                    assignedTeacherInput.appendChild(option);
+                });
+            }
+            
+            function sendWhatsApp(account, type) {
+                let message = '';
+                
+                if (type === 'teacher') {
+                    message = `Compte enseignant pour ${account.name}:
+                    
+Nom: ${account.name}
+Email: ${account.email}
+Matière: ${account.subject}
+Identifiant: ${account.username}
+Mot de passe: ${account.password}
+
+Ce compte est valable pendant 30 jours. - EDUC ACCESS`;
+                } else {
+                    message = `Compte élève pour ${account.name}:
+                    
+Nom: ${account.name}
+Classe: ${account.class}
+Enseignant: ${account.teacher}
+Identifiant: ${account.username}
+Mot de passe: ${account.password}
+
+Ce compte est valable pendant 30 jours. - EDUC ACCESS`;
+                }
+                
+                // Encoder le message pour URL
+                const encodedMessage = encodeURIComponent(message);
+                
+                // Numéro de téléphone
+                const phoneNumber = '22892871605';
+                
+                // Créer le lien WhatsApp
+                const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+                
+                // Ouvrir dans une nouvelle fenêtre
+                window.open(whatsappUrl, '_blank');
+            }
+            
+            function saveToHistory(account) {
+                accountsHistory.push(account);
+                updateHistoryDisplay();
+                saveHistoryToStorage();
+            }
+            
+            function updateHistoryDisplay() {
+                if (accountsHistory.length === 0) {
+                    historyList.innerHTML = '<div class="history-empty">Aucun compte généré pour le moment</div>';
+                    return;
+                }
+                
+                // Filtrer les comptes si un filtre est appliqué
+                let filteredHistory = accountsHistory;
+                if (currentFilter !== 'all') {
+                    filteredHistory = accountsHistory.filter(account => account.type === currentFilter);
+                }
+                
+                if (filteredHistory.length === 0) {
+                    historyList.innerHTML = '<div class="history-empty">Aucun compte ne correspond à votre filtre</div>';
+                    return;
+                }
+                
+                historyList.innerHTML = '';
+                
+                // Afficher les comptes du plus récent au plus ancien
+                filteredHistory.slice().reverse().forEach((account, index) => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = `history-item ${account.type}`;
+                    
+                    const now = new Date().getTime();
+                    const timeRemaining = account.expiration - now;
+                    const isExpired = timeRemaining <= 0;
+                    
+                    if (isExpired) {
+                        historyItem.classList.add('expired');
+                    }
+                    
+                    let timeText = 'Expiré';
+                    if (timeRemaining > 0) {
+                        const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                        timeText = `Expire dans: ${days}j ${hours}h ${minutes}m`;
+                    }
+                    
+                    let accountDetails = '';
+                    if (account.type === 'teacher') {
+                        accountDetails = `
+                            <div class="account-type type-teacher">Enseignant</div>
+                            <div class="history-name">${account.name}</div>
+                            <div class="history-credentials">
+                                Email: ${account.email}<br>
+                                Matière: ${account.subject}<br>
+                                Identifiant: ${account.username}<br>
+                                Mot de passe: ${account.password}
+                            </div>
+                        `;
+                    } else {
+                        accountDetails = `
+                            <div class="account-type type-student">Élève</div>
+                            <div class="history-name">${account.name}</div>
+                            <div class="history-credentials">
+                                Classe: ${account.class}<br>
+                                Enseignant: ${account.teacher}<br>
+                                Identifiant: ${account.username}<br>
+                                Mot de passe: ${account.password}
+                            </div>
+                        `;
+                    }
+                    
+                    historyItem.innerHTML = `
+                        ${accountDetails}
+                        <div class="history-timer">${timeText}</div>
+                        <div class="history-actions">
+                            <button class="action-btn check-btn" data-index="${accountsHistory.length - 1 - index}">
+                                <i class="fas fa-clock"></i> Vérifier
+                            </button>
+                            <button class="action-btn whatsapp-btn" data-index="${accountsHistory.length - 1 - index}" data-type="${account.type}">
+                                <i class="fab fa-whatsapp"></i> Envoyer
+                            </button>
+                        </div>
+                    `;
+                    
+                    historyList.appendChild(historyItem);
+                });
+                
+                // Ajouter les écouteurs d'événements pour les boutons de vérification
+                document.querySelectorAll('.check-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        checkRemainingTime(index);
+                    });
+                });
+                
+                // Ajouter les écouteurs d'événements pour les boutons WhatsApp
+                document.querySelectorAll('.whatsapp-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        const type = this.getAttribute('data-type');
+                        sendWhatsApp(accountsHistory[index], type);
+                    });
+                });
+            }
+            
+            function checkRemainingTime(index) {
+                if (index < 0 || index >= accountsHistory.length) return;
+                
+                const account = accountsHistory[index];
+                const now = new Date().getTime();
+                const timeRemaining = account.expiration - now;
+                
+                if (timeRemaining <= 0) {
+                    alert(`Le compte de ${account.name} (${account.username}) a expiré.`);
+                } else {
+                    const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+                    
+                    alert(`Temps restant pour le compte de ${account.name} (${account.username}):\n${days} jours, ${hours} heures, ${minutes} minutes, ${seconds} secondes.`);
+                }
+            }
+            
+            function saveHistoryToStorage() {
+                localStorage.setItem('accountsHistory', JSON.stringify(accountsHistory));
+            }
+            
+            function loadHistory() {
+                const storedHistory = localStorage.getItem('accountsHistory');
+                if (storedHistory) {
+                    accountsHistory = JSON.parse(storedHistory);
+                    updateHistoryDisplay();
+                    updateTeacherDropdown();
+                }
+            }
+            
+            function validateEmail(email) {
+                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return re.test(email);
+            }
+            
+            // Mettre à jour les compteurs d'expiration de l'historique toutes les minutes
+            setInterval(updateHistoryDisplay, 60000);
+        });
+    </script>
+</body>
+</html>

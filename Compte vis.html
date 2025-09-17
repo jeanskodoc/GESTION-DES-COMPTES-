@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Codes de Sécurité</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 15px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            color: #6a11cb;
+        }
+        
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .whatsapp {
+            display: inline-flex;
+            align-items: center;
+            background-color: #25D366;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 5px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            font-size: 14px;
+        }
+        
+        .whatsapp:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4);
+        }
+        
+        .whatsapp i {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .form-section, .history-section {
+            width: 100%;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        input[type="email"], input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="email"]:focus, input[type="text"]:focus {
+            border-color: #6a11cb;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+        }
+        
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        button {
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .primary-btn {
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+        }
+        
+        .secondary-btn {
+            background: linear-gradient(to right, #f39c12, #e67e22);
+        }
+        
+        .filter-btn {
+            background: linear-gradient(to right, #00b09b, #96c93d);
+        }
+        
+        .whatsapp-btn {
+            background: #25D366;
+        }
+        
+        .code-display {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(to right, #f8f9fa, #e9ecef);
+            border-radius: 10px;
+            border: 2px dashed #6a11cb;
+        }
+        
+        .code {
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            color: #e74c3c;
+            margin: 15px 0;
+            font-family: monospace;
+            padding: 10px;
+            background-color: white;
+            border-radius: 8px;
+            display: inline-block;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            word-break: break-all;
+        }
+        
+        .send-whatsapp {
+            margin: 15px 0;
+        }
+        
+        .expiration {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff4e6;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 5px solid #e67e22;
+        }
+        
+        .timer {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e67e22;
+            margin: 10px 0;
+            font-family: monospace;
+            letter-spacing: 1px;
+        }
+        
+        .timer-units {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .timer-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            min-width: 70px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .timer-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #e67e22;
+        }
+        
+        .timer-label {
+            font-size: 11px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+        
+        .history-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .history-header {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .history-title {
+            color: #2c3e50;
+            font-size: 22px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ddd;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .filters {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .history-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #6a11cb;
+        }
+        
+        .history-item.expired {
+            border-left: 4px solid #e74c3c;
+            opacity: 0.8;
+        }
+        
+        .history-email {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+        
+        .history-code {
+            font-family: monospace;
+            font-size: 16px;
+            color: #e74c3c;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+        
+        .history-timer {
+            color: #e67e22;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .history-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            font-size: 14px;
+            border-radius: 5px;
+            width: auto;
+        }
+        
+        .check-btn {
+            background: #3498db;
+        }
+        
+        .history-empty {
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+            padding: 20px;
+        }
+        
+        .disclaimer {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            border-left: 5px solid #3498db;
+        }
+        
+        footer {
+            margin-top: 25px;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        @media (min-width: 768px) {
+            .container {
+                padding: 30px;
+            }
+            
+            .main-content {
+                flex-direction: row;
+            }
+            
+            .form-section, .history-section {
+                width: 48%;
+            }
+            
+            .buttons {
+                flex-direction: row;
+            }
+            
+            .filters {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+            
+            .filter-group {
+                flex: 1;
+                margin-right: 10px;
+            }
+            
+            .history-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-lock"></i>
+                SECURICODE
+            </div>
+            <p>Votre partenaire de confiance pour la sécurité en ligne</p>
+            <div class="contact-info">
+                <span>Contactez-nous sur WhatsApp:</span>
+                <a href="https://wa.me/22892871605" class="whatsapp">
+                    <i class="fab fa-whatsapp"></i>
+                    +228 92 87 16 05
+                </a>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="email"><i class="fas fa-envelope"></i> Adresse Email</label>
+                    <input type="email" id="email" placeholder="Entrez votre adresse email" required>
+                </div>
+                
+                <div class="buttons">
+                    <button id="generate-btn" class="primary-btn">
+                        <i class="fas fa-key"></i> Générer
+                    </button>
+                    
+                    <button id="add-btn" class="secondary-btn">
+                        <i class="fas fa-plus"></i> Ajouter
+                    </button>
+                </div>
+                
+                <div class="code-display">
+                    <p>Votre code de sécurité à 6 caractères:</p>
+                    <div id="code" class="code">------</div>
+                    
+                    <div class="send-whatsapp">
+                        <button id="whatsapp-btn" class="whatsapp-btn">
+                            <i class="fab fa-whatsapp"></i> Envoyer par WhatsApp
+                        </button>
+                    </div>
+                    
+                    <p>Ce code expirera dans:</p>
+                    
+                    <div class="expiration">
+                        <div class="timer-units">
+                            <div class="timer-unit">
+                                <span id="days" class="timer-value">07</span>
+                                <span class="timer-label">jours</span>
+                            </div>
+                            <div class="timer-unit">
+                                <span id="hours" class="timer-value">00</span>
+                                <span class="timer-label">heures</span>
+                            </div>
+                            <div class="timer-unit">
+                                <span id="minutes" class="timer-value">00</span>
+                                <span class="timer-label">minutes</span>
+                            </div>
+                            <div class="timer-unit">
+                                <span id="seconds" class="timer-value">00</span>
+                                <span class="timer-label">secondes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="history-section">
+                <div class="history-header">
+                    <h2 class="history-title"><i class="fas fa-history"></i> Historique</h2>
+                    
+                    <div class="filters">
+                        <div class="filter-group">
+                            <label for="email-filter"><i class="fas fa-filter"></i> Filtrer par email</label>
+                            <input type="text" id="email-filter" placeholder="Rechercher par email">
+                        </div>
+                        
+                        <button id="filter-btn" class="filter-btn">
+                            <i class="fas fa-search"></i> Filtrer
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="history-list">
+                    <div class="history-empty">Aucun code généré pour le moment</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="disclaimer">
+            <p><strong>Important:</strong> Chaque code est valable pendant 7 jours à compter de sa génération. Après expiration, vous devrez générer un nouveau code.</p>
+            <p class="whatsapp-info">Pour toute assistance, contactez-nous via WhatsApp au <strong>+228 92 87 16 05</strong>.</p>
+        </div>
+        
+        <footer>
+            <p>© 2023 SECURICODE - Tous droits réservés</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const generateBtn = document.getElementById('generate-btn');
+            const addBtn = document.getElementById('add-btn');
+            const filterBtn = document.getElementById('filter-btn');
+            const whatsappBtn = document.getElementById('whatsapp-btn');
+            const emailInput = document.getElementById('email');
+            const emailFilter = document.getElementById('email-filter');
+            const codeDisplay = document.getElementById('code');
+            const daysDisplay = document.getElementById('days');
+            const hoursDisplay = document.getElementById('hours');
+            const minutesDisplay = document.getElementById('minutes');
+            const secondsDisplay = document.getElementById('seconds');
+            const historyList = document.getElementById('history-list');
+            
+            // Caractères autorisés pour le code
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*';
+            
+            // Durée de validité du code (7 jours)
+            const expirationDays = 7;
+            let expirationDate = null;
+            let countdownInterval = null;
+            let codesHistory = [];
+            let currentFilter = '';
+            let currentCode = '';
+            let currentEmail = '';
+            
+            // Charger l'historique depuis le localStorage
+            loadHistory();
+            
+            generateBtn.addEventListener('click', function() {
+                generateCode();
+            });
+            
+            addBtn.addEventListener('click', function() {
+                generateCode();
+            });
+            
+            filterBtn.addEventListener('click', function() {
+                currentFilter = emailFilter.value.trim().toLowerCase();
+                updateHistoryDisplay();
+            });
+            
+            whatsappBtn.addEventListener('click', function() {
+                if (!currentCode) {
+                    alert('Veuillez d\'abord générer un code.');
+                    return;
+                }
+                
+                sendWhatsApp(currentEmail, currentCode);
+            });
+            
+            function generateCode() {
+                // Validation de l'email
+                const email = emailInput.value;
+                if (!validateEmail(email)) {
+                    alert('Veuillez entrer une adresse email valide.');
+                    return;
+                }
+                
+                // Génération du code
+                let code = '';
+                for (let i = 0; i < 6; i++) {
+                    const randomIndex = Math.floor(Math.random() * characters.length);
+                    code += characters[randomIndex];
+                }
+                
+                // Stocker le code et l'email courants
+                currentCode = code;
+                currentEmail = email;
+                
+                // Affichage du code
+                codeDisplay.textContent = code;
+                
+                // Définition de la date d'expiration (7 jours à partir de maintenant)
+                expirationDate = new Date();
+                expirationDate.setDate(expirationDate.getDate() + expirationDays);
+                
+                // Sauvegarder le code dans l'historique
+                saveToHistory(email, code, expirationDate);
+                
+                // Démarrage du compte à rebours
+                if (countdownInterval) {
+                    clearInterval(countdownInterval);
+                }
+                
+                updateCountdown();
+                countdownInterval = setInterval(updateCountdown, 1000);
+                
+                // Simulation d'envoi d'email
+                console.log(`Email envoyé à: ${email}`);
+                console.log(`Code de sécurité: ${code}`);
+                alert(`Un code de sécurité a été généré et sera envoyé à ${email} (simulation).`);
+            }
+            
+            function sendWhatsApp(email, code) {
+                // Formater le message pour WhatsApp
+                const message = `Bonjour! Votre code de sécurité est: ${code}. Ce code est associé à l'email: ${email} et expirera dans 7 jours. - SECURICODE`;
+                
+                // Encoder le message pour URL
+                const encodedMessage = encodeURIComponent(message);
+                
+                // Numéro de téléphone (ajouter l'indicatif pays si nécessaire)
+                const phoneNumber = '22892871605';
+                
+                // Créer le lien WhatsApp
+                const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+                
+                // Ouvrir dans une nouvelle fenêtre
+                window.open(whatsappUrl, '_blank');
+            }
+            
+            function saveToHistory(email, code, expirationDate) {
+                const codeData = {
+                    email: email,
+                    code: code,
+                    expiration: expirationDate.getTime(),
+                    created: new Date().getTime()
+                };
+                
+                codesHistory.push(codeData);
+                updateHistoryDisplay();
+                saveHistoryToStorage();
+            }
+            
+            function updateHistoryDisplay() {
+                if (codesHistory.length === 0) {
+                    historyList.innerHTML = '<div class="history-empty">Aucun code généré pour le moment</div>';
+                    return;
+                }
+                
+                // Filtrer les codes si un filtre est appliqué
+                let filteredHistory = codesHistory;
+                if (currentFilter) {
+                    filteredHistory = codesHistory.filter(item => 
+                        item.email.toLowerCase().includes(currentFilter)
+                    );
+                }
+                
+                if (filteredHistory.length === 0) {
+                    historyList.innerHTML = '<div class="history-empty">Aucun code ne correspond à votre filtre</div>';
+                    return;
+                }
+                
+                historyList.innerHTML = '';
+                
+                // Afficher les codes du plus récent au plus ancien
+                filteredHistory.slice().reverse().forEach((item, index) => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item';
+                    
+                    const now = new Date().getTime();
+                    const timeRemaining = item.expiration - now;
+                    const isExpired = timeRemaining <= 0;
+                    
+                    if (isExpired) {
+                        historyItem.classList.add('expired');
+                    }
+                    
+                    let timeText = 'Expiré';
+                    if (timeRemaining > 0) {
+                        const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                        timeText = `Expire dans: ${days}j ${hours}h ${minutes}m`;
+                    }
+                    
+                    historyItem.innerHTML = `
+                        <div class="history-email">${item.email}</div>
+                        <div class="history-code">${item.code}</div>
+                        <div class="history-timer">${timeText}</div>
+                        <div class="history-actions">
+                            <button class="action-btn check-btn" data-index="${codesHistory.length - 1 - index}">
+                                <i class="fas fa-clock"></i> Vérifier
+                            </button>
+                            <button class="action-btn whatsapp-btn" data-email="${item.email}" data-code="${item.code}">
+                                <i class="fab fa-whatsapp"></i> Envoyer
+                            </button>
+                        </div>
+                    `;
+                    
+                    historyList.appendChild(historyItem);
+                });
+                
+                // Ajouter les écouteurs d'événements pour les boutons de vérification
+                document.querySelectorAll('.check-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        checkRemainingTime(index);
+                    });
+                });
+                
+                // Ajouter les écouteurs d'événements pour les boutons WhatsApp
+                document.querySelectorAll('.whatsapp-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const email = this.getAttribute('data-email');
+                        const code = this.getAttribute('data-code');
+                        sendWhatsApp(email, code);
+                    });
+                });
+            }
+            
+            function checkRemainingTime(index) {
+                if (index < 0 || index >= codesHistory.length) return;
+                
+                const item = codesHistory[index];
+                const now = new Date().getTime();
+                const timeRemaining = item.expiration - now;
+                
+                if (timeRemaining <= 0) {
+                    alert(`Le code ${item.code} associé à ${item.email} a expiré.`);
+                } else {
+                    const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+                    
+                    alert(`Temps restant pour le code ${item.code} (${item.email}):\n${days} jours, ${hours} heures, ${minutes} minutes, ${seconds} secondes.`);
+                }
+            }
+            
+            function saveHistoryToStorage() {
+                localStorage.setItem('codesHistory', JSON.stringify(codesHistory));
+            }
+            
+            function loadHistory() {
+                const storedHistory = localStorage.getItem('codesHistory');
+                if (storedHistory) {
+                    codesHistory = JSON.parse(storedHistory);
+                    updateHistoryDisplay();
+                }
+            }
+            
+            function updateCountdown() {
+                if (!expirationDate) return;
+                
+                const now = new Date();
+                const timeRemaining = expirationDate - now;
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(countdownInterval);
+                    daysDisplay.textContent = "00";
+                    hoursDisplay.textContent = "00";
+                    minutesDisplay.textContent = "00";
+                    secondsDisplay.textContent = "00";
+                    return;
+                }
+                
+                // Calcul des jours, heures, minutes et secondes restantes
+                const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+                
+                // Formatage et affichage
+                daysDisplay.textContent = padZero(days);
+                hoursDisplay.textContent = padZero(hours);
+                minutesDisplay.textContent = padZero(minutes);
+                secondsDisplay.textContent = padZero(seconds);
+            }
+            
+            function padZero(num) {
+                return num.toString().padStart(2, '0');
+            }
+            
+            function validateEmail(email) {
+                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return re.test(email);
+            }
+            
+            // Mettre à jour les compteurs d'expiration de l'historique toutes les minutes
+            setInterval(updateHistoryDisplay, 60000);
+        });
+    </script>
+</body>
+</html>

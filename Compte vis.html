@@ -17,8 +17,10 @@
             background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             color: #333;
             line-height: 1.6;
-            padding: 15px;
+            padding: 10px;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         
         .container {
@@ -27,8 +29,9 @@
             background: white;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            padding: 20px;
+            padding: 15px;
             margin: 0 auto;
+            flex: 1;
         }
         
         .btn-retour {
@@ -39,6 +42,7 @@
             cursor: pointer;
             font-size: 14px;
             margin-bottom: 15px;
+            width: auto;
         }
         
         .btn-retour:hover {
@@ -51,7 +55,7 @@
         }
         
         .logo {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
             color: #2c3e50;
             margin-bottom: 10px;
@@ -72,6 +76,7 @@
             margin: 15px 0;
             gap: 10px;
             flex-wrap: wrap;
+            flex-direction: column;
         }
         
         .whatsapp {
@@ -191,7 +196,7 @@
         }
         
         .code {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
             letter-spacing: 4px;
             color: #e74c3c;
@@ -230,7 +235,7 @@
         .timer-units {
             display: flex;
             justify-content: center;
-            gap: 15px;
+            gap: 10px;
             margin-top: 10px;
             flex-wrap: wrap;
         }
@@ -242,18 +247,18 @@
             background-color: white;
             padding: 8px 12px;
             border-radius: 8px;
-            min-width: 70px;
+            min-width: 60px;
             box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
         }
         
         .timer-value {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             color: #e67e22;
         }
         
         .timer-label {
-            font-size: 11px;
+            font-size: 10px;
             color: #7f8c8d;
             text-transform: uppercase;
             margin-top: 5px;
@@ -276,7 +281,7 @@
         
         .history-title {
             color: #2c3e50;
-            font-size: 22px;
+            font-size: 20px;
             padding-bottom: 10px;
             border-bottom: 2px solid #ddd;
             display: flex;
@@ -334,7 +339,7 @@
         
         .history-actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
         }
         
@@ -343,6 +348,8 @@
             font-size: 14px;
             border-radius: 5px;
             width: auto;
+            flex: 1;
+            min-width: 0;
         }
         
         .check-btn {
@@ -374,17 +381,18 @@
             font-size: 14px;
         }
         
-        @media (min-width: 768px) {
+        /* Tablettes et petits écrans */
+        @media (min-width: 600px) {
             .container {
-                padding: 30px;
+                padding: 20px;
             }
             
-            .main-content {
+            .logo {
+                font-size: 28px;
+            }
+            
+            .contact-info {
                 flex-direction: row;
-            }
-            
-            .form-section, .history-section {
-                width: 48%;
             }
             
             .buttons {
@@ -405,6 +413,107 @@
                 flex-direction: row;
                 justify-content: space-between;
                 align-items: center;
+            }
+            
+            .timer-units {
+                gap: 15px;
+            }
+            
+            .timer-unit {
+                min-width: 70px;
+            }
+            
+            .timer-value {
+                font-size: 20px;
+            }
+            
+            .timer-label {
+                font-size: 11px;
+            }
+            
+            .code {
+                font-size: 28px;
+            }
+            
+            .history-actions {
+                gap: 10px;
+            }
+            
+            .action-btn {
+                flex: 0;
+                min-width: auto;
+            }
+        }
+        
+        /* Ordinateurs et grands écrans */
+        @media (min-width: 900px) {
+            .container {
+                padding: 30px;
+            }
+            
+            .main-content {
+                flex-direction: row;
+            }
+            
+            .form-section, .history-section {
+                width: 48%;
+            }
+            
+            .history-section {
+                max-height: 600px;
+            }
+        }
+        
+        /* Très petits écrans (téléphones en mode portrait) */
+        @media (max-width: 360px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .logo {
+                font-size: 20px;
+            }
+            
+            .code {
+                font-size: 20px;
+                letter-spacing: 2px;
+            }
+            
+            .timer-unit {
+                min-width: 50px;
+                padding: 6px 8px;
+            }
+            
+            .timer-value {
+                font-size: 16px;
+            }
+            
+            .timer-label {
+                font-size: 9px;
+            }
+            
+            .history-actions {
+                flex-direction: column;
+            }
+            
+            .action-btn {
+                width: 100%;
+            }
+        }
+        
+        /* Améliorations pour le tactile */
+        @media (hover: none) and (pointer: coarse) {
+            button:hover {
+                transform: none;
+                box-shadow: none;
+            }
+            
+            button:active {
+                transform: scale(0.98);
+            }
+            
+            input, button {
+                min-height: 44px;
             }
         }
     </style>

@@ -1,18 +1,5 @@
 <!DOCTYPE html>
 <html lang="fr">
-    <style>
-  .btn-retour {
-    padding: 8px 16px;
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-  }
-  .btn-retour:hover {
-    background-color: #e0e0e0;
-  }
-</style>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -42,6 +29,20 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             padding: 20px;
             margin: 0 auto;
+        }
+        
+        .btn-retour {
+            padding: 8px 16px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .btn-retour:hover {
+            background-color: #e0e0e0;
         }
         
         header {
@@ -174,6 +175,10 @@
         
         .whatsapp-btn {
             background: #25D366;
+        }
+        
+        .delete-btn {
+            background: linear-gradient(to right, #e74c3c, #c0392b);
         }
         
         .code-display {
@@ -537,6 +542,9 @@
             // Charger l'historique depuis le localStorage
             loadHistory();
             
+            // Vérifier et supprimer les codes expirés au chargement
+            checkAndRemoveExpiredCodes();
+            
             generateBtn.addEventListener('click', function() {
                 generateCode();
             });
@@ -685,6 +693,9 @@
                             <button class="action-btn whatsapp-btn" data-email="${item.email}" data-code="${item.code}">
                                 <i class="fab fa-whatsapp"></i> Envoyer
                             </button>
+                            <button class="action-btn delete-btn" data-index="${codesHistory.length - 1 - index}">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </button>
                         </div>
                     `;
                     
@@ -707,6 +718,14 @@
                         sendWhatsApp(email, code);
                     });
                 });
+                
+                // Ajouter les écouteurs d'événements pour les boutons de suppression
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        deleteCode(index);
+                    });
+                });
             }
             
             function checkRemainingTime(index) {
@@ -725,6 +744,33 @@
                     const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
                     
                     alert(`Temps restant pour le code ${item.code} (${item.email}):\n${days} jours, ${hours} heures, ${minutes} minutes, ${seconds} secondes.`);
+                }
+            }
+            
+            function deleteCode(index) {
+                if (index < 0 || index >= codesHistory.length) return;
+                
+                const item = codesHistory[index];
+                if (confirm(`Êtes-vous sûr de vouloir supprimer le code ${item.code} associé à ${item.email} ?`)) {
+                    codesHistory.splice(index, 1);
+                    updateHistoryDisplay();
+                    saveHistoryToStorage();
+                }
+            }
+            
+            function checkAndRemoveExpiredCodes() {
+                const now = new Date().getTime();
+                const initialLength = codesHistory.length;
+                
+                // Filtrer les codes non expirés
+                codesHistory = codesHistory.filter(item => {
+                    return item.expiration > now;
+                });
+                
+                // Si des codes ont été supprimés, mettre à jour l'affichage et le stockage
+                if (codesHistory.length < initialLength) {
+                    updateHistoryDisplay();
+                    saveHistoryToStorage();
                 }
             }
             
@@ -779,6 +825,9 @@
             
             // Mettre à jour les compteurs d'expiration de l'historique toutes les minutes
             setInterval(updateHistoryDisplay, 60000);
+            
+            // Vérifier et supprimer les codes expirés toutes les 30 secondes
+            setInterval(checkAndRemoveExpiredCodes, 30000);
         });
     </script>
 </body>

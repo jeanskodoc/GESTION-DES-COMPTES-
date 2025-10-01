@@ -1,19 +1,5 @@
 <!DOCTYPE html>
 <html lang="fr">
-    <style>
-  .btn-retour {
-    padding: 8px 16px;
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-  }
-  .btn-retour:hover {
-    background-color: #e0e0e0;
-  }
-</style>
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -43,6 +29,20 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             padding: 20px;
             margin: 0 auto;
+        }
+        
+        .btn-retour {
+            padding: 8px 16px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .btn-retour:hover {
+            background-color: #e0e0e0;
         }
         
         header {
@@ -211,6 +211,10 @@
             background: #25D366;
         }
         
+        .delete-btn {
+            background: linear-gradient(to right, #e74c3c, #c0392b);
+        }
+        
         .credentials-display {
             text-align: center;
             margin: 20px 0;
@@ -374,6 +378,7 @@
         
         .history-item.expired {
             opacity: 0.7;
+            border-left: 4px solid #e74c3c;
         }
         
         .account-type {
@@ -458,6 +463,16 @@
             text-align: center;
             color: #7f8c8d;
             font-size: 14px;
+        }
+        
+        .auto-save-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #27ae60;
         }
         
         @media (min-width: 768px) {
@@ -702,8 +717,12 @@
             </div>
         </div>
         
+        <div class="auto-save-status">
+            <i class="fas fa-sync-alt"></i> Sauvegarde automatique active
+        </div>
+        
         <div class="disclaimer">
-            <p><strong>Important:</strong> Tous les comptes sont valables pendant 30 jours à compter de leur génération. Après expiration, vous devrez générer de nouveaux identifiants.</p>
+            <p><strong>Important:</strong> Tous les comptes sont valables pendant 30 jours à compter de leur génération. Après expiration, les comptes sont automatiquement supprimés.</p>
             <p class="whatsapp-info">Pour toute assistance, contactez le support via WhatsApp au <strong>+228 92 87 16 05</strong>.</p>
         </div>
         
@@ -776,9 +795,11 @@
             let currentFilter = 'all';
             let currentTeacherAccount = null;
             let currentStudentAccount = null;
+            let autoSaveInterval = null;
+            let autoDeleteInterval = null;
             
-            // Charger l'historique depuis le localStorage
-            loadHistory();
+            // Initialiser l'application
+            initializeApp();
             
             // Événements pour les enseignants
             generateTeacherBtn.addEventListener('click', generateTeacherAccount);
@@ -805,6 +826,20 @@
                 currentFilter = accountFilterInput.value;
                 updateHistoryDisplay();
             });
+            
+            function initializeApp() {
+                // Charger l'historique depuis le localStorage
+                loadHistory();
+                
+                // Vérifier et supprimer les comptes expirés au démarrage
+                checkAndRemoveExpiredAccounts();
+                
+                // Démarrer les sauvegardes automatiques
+                startAutoSave();
+                
+                // Démarrer la vérification automatique des expirations
+                startAutoDelete();
+            }
             
             function generateTeacherAccount() {
                 // Validation des champs
@@ -1083,6 +1118,9 @@ Ce compte est valable pendant 30 jours. - EDUC ACCESS`;
                             <button class="action-btn whatsapp-btn" data-index="${accountsHistory.length - 1 - index}" data-type="${account.type}">
                                 <i class="fab fa-whatsapp"></i> Envoyer
                             </button>
+                            <button class="action-btn delete-btn" data-index="${accountsHistory.length - 1 - index}">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </button>
                         </div>
                     `;
                     
@@ -1103,6 +1141,14 @@ Ce compte est valable pendant 30 jours. - EDUC ACCESS`;
                         const index = parseInt(this.getAttribute('data-index'));
                         const type = this.getAttribute('data-type');
                         sendWhatsApp(accountsHistory[index], type);
+                    });
+                });
+                
+                // Ajouter les écouteurs d'événements pour les boutons de suppression
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        deleteAccount(index);
                     });
                 });
             }
@@ -1126,8 +1172,44 @@ Ce compte est valable pendant 30 jours. - EDUC ACCESS`;
                 }
             }
             
+            function deleteAccount(index) {
+                if (index < 0 || index >= accountsHistory.length) return;
+                
+                const account = accountsHistory[index];
+                if (confirm(`Êtes-vous sûr de vouloir supprimer le compte de ${account.name} (${account.username}) ?`)) {
+                    accountsHistory.splice(index, 1);
+                    updateHistoryDisplay();
+                    saveHistoryToStorage();
+                    updateTeacherDropdown();
+                }
+            }
+            
+            function checkAndRemoveExpiredAccounts() {
+                const now = new Date().getTime();
+                const initialLength = accountsHistory.length;
+                
+                // Filtrer les comptes non expirés
+                accountsHistory = accountsHistory.filter(account => {
+                    return account.expiration > now;
+                });
+                
+                // Si des comptes ont été supprimés, mettre à jour l'affichage et le stockage
+                if (accountsHistory.length < initialLength) {
+                    updateHistoryDisplay();
+                    saveHistoryToStorage();
+                    updateTeacherDropdown();
+                    
+                    // Afficher une notification si des comptes ont été supprimés
+                    if (initialLength > accountsHistory.length) {
+                        const deletedCount = initialLength - accountsHistory.length;
+                        console.log(`${deletedCount} compte(s) expiré(s) supprimé(s) automatiquement.`);
+                    }
+                }
+            }
+            
             function saveHistoryToStorage() {
                 localStorage.setItem('accountsHistory', JSON.stringify(accountsHistory));
+                console.log('Sauvegarde automatique effectuée à ' + new Date().toLocaleTimeString());
             }
             
             function loadHistory() {
@@ -1139,6 +1221,18 @@ Ce compte est valable pendant 30 jours. - EDUC ACCESS`;
                 }
             }
             
+            function startAutoSave() {
+                // Sauvegarde automatique toutes les 30 secondes
+                autoSaveInterval = setInterval(saveHistoryToStorage, 30000);
+                console.log('Système de sauvegarde automatique activé');
+            }
+            
+            function startAutoDelete() {
+                // Vérification automatique des comptes expirés toutes les minutes
+                autoDeleteInterval = setInterval(checkAndRemoveExpiredAccounts, 60000);
+                console.log('Système de suppression automatique activé');
+            }
+            
             function validateEmail(email) {
                 const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 return re.test(email);
@@ -1146,6 +1240,9 @@ Ce compte est valable pendant 30 jours. - EDUC ACCESS`;
             
             // Mettre à jour les compteurs d'expiration de l'historique toutes les minutes
             setInterval(updateHistoryDisplay, 60000);
+            
+            // Sauvegarde avant de quitter la page
+            window.addEventListener('beforeunload', saveHistoryToStorage);
         });
     </script>
 </body>

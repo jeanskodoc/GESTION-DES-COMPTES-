@@ -333,6 +333,12 @@
             gap: 8px;
         }
 
+        .tenant-credentials {
+            background: #e8f5e8;
+            border-left: 4px solid #27ae60;
+            margin-top: 10px;
+        }
+
         .tenants-list {
             background: #f8f9fa;
             padding: 15px;
@@ -588,6 +594,12 @@
                             <input type="number" id="rentAmount" class="form-control" placeholder="Montant en FCFA" required>
                         </div>
 
+                        <div class="auto-generate-info">
+                            <i class="fas fa-key"></i>
+                            <strong>Génération automatique</strong><br>
+                            Un identifiant et un mot de passe locataire seront générés automatiquement
+                        </div>
+
                         <button type="submit" class="btn btn-success">
                             <i class="fas fa-user-plus"></i> Ajouter le Locataire
                         </button>
@@ -658,9 +670,9 @@
     <div class="modal" id="credentialsModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">
+                <h3 class="modal-title" id="modalTitle">
                     <i class="fas fa-key"></i>
-                    Identifiants de Connexion Générés
+                    Identifiants de Connexion
                 </h3>
                 <button class="close-modal" id="closeModal">&times;</button>
             </div>
@@ -721,22 +733,43 @@
                 });
             }
 
-            generateUsername(name) {
-                // Créer un identifiant basé sur le nom
+            generateOwnerUsername(name) {
+                // Créer un identifiant propriétaire basé sur le nom
                 const baseName = name.toLowerCase()
-                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Supprimer les accents
-                    .replace(/\s+/g, '.') // Remplacer les espaces par des points
-                    .replace(/[^a-z0-9.]/g, ''); // Supprimer les caractères spéciaux
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                    .replace(/\s+/g, '.')
+                    .replace(/[^a-z0-9.]/g, '');
                 
-                const randomNum = Math.floor(100 + Math.random() * 900); // Numéro entre 100 et 999
-                return `${baseName}.${randomNum}`;
+                const randomNum = Math.floor(100 + Math.random() * 900);
+                return `prop.${baseName}.${randomNum}`;
             }
 
-            generatePassword() {
-                // Générer un mot de passe sécurisé de 12 caractères
+            generateTenantUsername(name) {
+                // Créer un identifiant locataire différent
+                const baseName = name.toLowerCase()
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                    .replace(/\s+/g, '')
+                    .replace(/[^a-z0-9]/g, '');
+                
+                const randomNum = Math.floor(1000 + Math.random() * 9000);
+                return `loc${baseName}${randomNum}`;
+            }
+
+            generateOwnerPassword() {
+                // Générer un mot de passe propriétaire fort
                 const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*';
                 let password = '';
                 for (let i = 0; i < 12; i++) {
+                    password += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                return password;
+            }
+
+            generateTenantPassword() {
+                // Générer un mot de passe locataire différent (plus simple)
+                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                let password = '';
+                for (let i = 0; i < 10; i++) {
                     password += chars.charAt(Math.floor(Math.random() * chars.length));
                 }
                 return password;
@@ -746,12 +779,16 @@
                 return 'PROP_' + Date.now().toString() + '_' + Math.random().toString(36).substr(2, 5).toUpperCase();
             }
 
+            generateTenantId() {
+                return 'LOC_' + Date.now().toString() + '_' + Math.random().toString(36).substr(2, 5).toUpperCase();
+            }
+
             createOwner() {
                 const ownerName = document.getElementById('ownerName').value;
                 
-                // Générer automatiquement identifiant et mot de passe
-                const username = this.generateUsername(ownerName);
-                const password = this.generatePassword();
+                // Générer automatiquement identifiant et mot de passe PROPRIÉTAIRE
+                const username = this.generateOwnerUsername(ownerName);
+                const password = this.generateOwnerPassword();
 
                 const owner = {
                     id: this.generateOwnerId(),
@@ -763,14 +800,14 @@
                     propertyAddress: document.getElementById('propertyAddress').value,
                     propertyType: document.getElementById('propertyType').value,
                     createdAt: new Date().toISOString(),
-                    expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 jours
+                    expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
                 };
 
                 this.owners.push(owner);
                 this.saveToStorage('maisonPro_owners', this.owners);
                 this.updateOwnerSelect();
                 this.updateDisplay();
-                this.showCredentials(owner);
+                this.showOwnerCredentials(owner);
                 document.getElementById('ownerForm').reset();
             }
 
@@ -781,10 +818,18 @@
                     return;
                 }
 
+                const tenantName = document.getElementById('tenantName').value;
+                
+                // Générer automatiquement identifiant et mot de passe LOCATAIRE
+                const username = this.generateTenantUsername(tenantName);
+                const password = this.generateTenantPassword();
+
                 const tenant = {
-                    id: Date.now().toString(),
+                    id: this.generateTenantId(),
                     ownerId: ownerId,
-                    name: document.getElementById('tenantName').value,
+                    username: username,
+                    password: password,
+                    name: tenantName,
                     phone: document.getElementById('tenantPhone').value,
                     rentAmount: document.getElementById('rentAmount').value,
                     createdAt: new Date().toISOString()
@@ -793,7 +838,7 @@
                 this.tenants.push(tenant);
                 this.saveToStorage('maisonPro_tenants', this.tenants);
                 this.updateDisplay();
-                this.showNotification('Locataire ajouté avec succès!', 'success');
+                this.showTenantCredentials(tenant);
                 document.getElementById('tenantForm').reset();
             }
 
@@ -877,8 +922,8 @@
 
                         <div class="credentials-section">
                             <div class="credentials-title">
-                                <i class="fas fa-key"></i>
-                                Identifiants de connexion
+                                <i class="fas fa-user-tie"></i>
+                                Identifiants Propriétaire
                             </div>
                             <div class="credential-item">
                                 <span><strong>Identifiant:</strong> ${owner.username}</span>
@@ -888,7 +933,7 @@
                             </div>
                             <div class="credential-item">
                                 <span><strong>Mot de passe:</strong> ••••••••</span>
-                                <button class="btn-sm btn-info" onclick="accountManager.showCredentialsModal('${owner.id}')">
+                                <button class="btn-sm btn-info" onclick="accountManager.showOwnerCredentialsModal('${owner.id}')">
                                     <i class="fas fa-eye"></i> Voir
                                 </button>
                             </div>
@@ -907,8 +952,29 @@
                                             <small>${tenant.phone} - ${tenant.rentAmount} FCFA</small>
                                         </div>
                                         <div class="tenant-actions">
+                                            <button class="btn btn-sm btn-info" onclick="accountManager.showTenantCredentialsModal('${tenant.id}')">
+                                                <i class="fas fa-key"></i>
+                                            </button>
                                             <button class="btn btn-sm btn-danger" onclick="accountManager.removeTenant('${tenant.id}')">
                                                 <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="tenant-credentials credentials-section">
+                                        <div class="credentials-title">
+                                            <i class="fas fa-user"></i>
+                                            Identifiants Locataire
+                                        </div>
+                                        <div class="credential-item">
+                                            <span><strong>Identifiant:</strong> ${tenant.username}</span>
+                                            <button class="copy-btn" onclick="accountManager.copyToClipboard('${tenant.username}')">
+                                                <i class="fas fa-copy"></i> Copier
+                                            </button>
+                                        </div>
+                                        <div class="credential-item">
+                                            <span><strong>Mot de passe:</strong> ••••••••</span>
+                                            <button class="btn-sm btn-info" onclick="accountManager.showTenantCredentialsModal('${tenant.id}')">
+                                                <i class="fas fa-eye"></i> Voir
                                             </button>
                                         </div>
                                     </div>
@@ -927,7 +993,7 @@
                             <button class="btn btn-sm btn-warning" onclick="accountManager.extendAccount('${owner.id}')">
                                 <i class="fas fa-calendar-plus"></i> Prolonger
                             </button>
-                            <button class="btn btn-sm btn-info" onclick="accountManager.showCredentialsModal('${owner.id}')">
+                            <button class="btn btn-sm btn-info" onclick="accountManager.showOwnerCredentialsModal('${owner.id}')">
                                 <i class="fas fa-key"></i> Identifiants
                             </button>
                             <button class="btn btn-sm btn-danger" onclick="accountManager.removeOwner('${owner.id}')">
@@ -942,13 +1008,16 @@
                 this.updateStats();
             }
 
-            showCredentials(owner) {
+            showOwnerCredentials(owner) {
                 const modalContent = document.getElementById('modalCredentialsContent');
+                const modalTitle = document.getElementById('modalTitle');
+                modalTitle.innerHTML = `<i class="fas fa-user-tie"></i> Identifiants Propriétaire`;
+                
                 modalContent.innerHTML = `
                     <div class="credentials-display">
                         <div style="margin-bottom: 15px; text-align: center;">
                             <i class="fas fa-check-circle" style="color: #28a745; font-size: 48px; margin-bottom: 10px;"></i>
-                            <div><strong>Compte créé avec succès pour ${owner.name}</strong></div>
+                            <div><strong>Compte propriétaire créé pour ${owner.name}</strong></div>
                         </div>
                         <div class="credential-item">
                             <span><strong>Identifiant:</strong> ${owner.username}</span>
@@ -971,10 +1040,47 @@
                 document.getElementById('credentialsModal').style.display = 'flex';
             }
 
-            showCredentialsModal(ownerId) {
+            showTenantCredentials(tenant) {
+                const owner = this.owners.find(o => o.id === tenant.ownerId);
+                const modalContent = document.getElementById('modalCredentialsContent');
+                const modalTitle = document.getElementById('modalTitle');
+                modalTitle.innerHTML = `<i class="fas fa-user"></i> Identifiants Locataire`;
+                
+                modalContent.innerHTML = `
+                    <div class="credentials-display">
+                        <div style="margin-bottom: 15px; text-align: center;">
+                            <i class="fas fa-check-circle" style="color: #28a745; font-size: 48px; margin-bottom: 10px;"></i>
+                            <div><strong>Compte locataire créé pour ${tenant.name}</strong></div>
+                            ${owner ? `<div><small>Propriétaire: ${owner.name}</small></div>` : ''}
+                        </div>
+                        <div class="credential-item">
+                            <span><strong>Identifiant:</strong> ${tenant.username}</span>
+                            <button class="copy-btn" onclick="accountManager.copyToClipboard('${tenant.username}')">
+                                <i class="fas fa-copy"></i> Copier
+                            </button>
+                        </div>
+                        <div class="credential-item">
+                            <span><strong>Mot de passe:</strong> ${tenant.password}</span>
+                            <button class="copy-btn" onclick="accountManager.copyToClipboard('${tenant.password}')">
+                                <i class="fas fa-copy"></i> Copier
+                            </button>
+                        </div>
+                        <div style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 5px; font-size: 12px;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Important:</strong> Notez ces identifiants. Ils ne seront plus affichés après fermeture de cette fenêtre.
+                        </div>
+                    </div>
+                `;
+                document.getElementById('credentialsModal').style.display = 'flex';
+            }
+
+            showOwnerCredentialsModal(ownerId) {
                 const owner = this.owners.find(o => o.id === ownerId);
                 if (owner) {
                     const modalContent = document.getElementById('modalCredentialsContent');
+                    const modalTitle = document.getElementById('modalTitle');
+                    modalTitle.innerHTML = `<i class="fas fa-user-tie"></i> Identifiants Propriétaire`;
+                    
                     modalContent.innerHTML = `
                         <div class="credentials-display">
                             <div style="margin-bottom: 15px;">
@@ -989,6 +1095,38 @@
                             <div class="credential-item">
                                 <span><strong>Mot de passe:</strong> ${owner.password}</span>
                                 <button class="copy-btn" onclick="accountManager.copyToClipboard('${owner.password}')">
+                                    <i class="fas fa-copy"></i> Copier
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('credentialsModal').style.display = 'flex';
+                }
+            }
+
+            showTenantCredentialsModal(tenantId) {
+                const tenant = this.tenants.find(t => t.id === tenantId);
+                const owner = this.owners.find(o => o.id === tenant.ownerId);
+                if (tenant) {
+                    const modalContent = document.getElementById('modalCredentialsContent');
+                    const modalTitle = document.getElementById('modalTitle');
+                    modalTitle.innerHTML = `<i class="fas fa-user"></i> Identifiants Locataire`;
+                    
+                    modalContent.innerHTML = `
+                        <div class="credentials-display">
+                            <div style="margin-bottom: 15px;">
+                                <strong>Identifiants de connexion pour ${tenant.name}</strong>
+                                ${owner ? `<div><small>Propriétaire: ${owner.name}</small></div>` : ''}
+                            </div>
+                            <div class="credential-item">
+                                <span><strong>Identifiant:</strong> ${tenant.username}</span>
+                                <button class="copy-btn" onclick="accountManager.copyToClipboard('${tenant.username}')">
+                                    <i class="fas fa-copy"></i> Copier
+                                </button>
+                            </div>
+                            <div class="credential-item">
+                                <span><strong>Mot de passe:</strong> ${tenant.password}</span>
+                                <button class="copy-btn" onclick="accountManager.copyToClipboard('${tenant.password}')">
                                     <i class="fas fa-copy"></i> Copier
                                 </button>
                             </div>

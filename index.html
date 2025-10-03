@@ -113,6 +113,10 @@
             border-left-color: #1a2a6c;
         }
         
+        .location-card {
+            border-left-color: #e74c3c;
+        }
+        
         .project-header {
             display: flex;
             align-items: center;
@@ -137,6 +141,10 @@
         
         .educaccess-icon {
             background: linear-gradient(to right, #1a2a6c, #2c3e50);
+        }
+        
+        .location-icon {
+            background: linear-gradient(to right, #e74c3c, #e67e22);
         }
         
         .project-title {
@@ -208,6 +216,10 @@
             background: linear-gradient(to right, #1a2a6c, #2c3e50);
         }
         
+        .location-btn {
+            background: linear-gradient(to right, #e74c3c, #e67e22);
+        }
+        
         .disclaimer {
             margin-top: 25px;
             padding: 20px;
@@ -229,10 +241,30 @@
         @media (min-width: 768px) {
             .projects-container {
                 flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: space-between;
             }
             
             .project-card {
                 width: 48%;
+            }
+            
+            .location-card {
+                width: 100%;
+                max-width: 800px;
+                margin: 0 auto;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .project-card {
+                width: 32%;
+            }
+            
+            .location-card {
+                width: 32%;
+                max-width: none;
+                margin: 0;
             }
         }
     </style>
@@ -244,7 +276,7 @@
                 <i class="fas fa-lock"></i>
                 PROJETS SECURICODE & EDUC ACCESS
             </div>
-            <p>Solutions innovantes pour la sécurité et l'éducation en ligne</p>
+            <p>Solutions innovantes pour la sécurité, l'éducation et la gestion immobilière</p>
             <div class="contact-info">
                 <span>Support technique:</span>
                 <a href="https://wa.me/22892871605" class="whatsapp">
@@ -312,6 +344,37 @@
                 
                 <a href="compte.html" class="project-btn educaccess-btn">
                     <i class="fas fa-external-link-alt"></i> Accéder à EDUC ACCESS
+                </a>
+            </div>
+            
+            <div class="project-card location-card">
+                <div class="project-header">
+                    <div class="project-icon location-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <h2 class="project-title">MAISON PRO</h2>
+                </div>
+                
+                <div class="project-description">
+                    <p>Plateforme complète de gestion immobilière pour propriétaires. Gérez vos logements, locataires et factures de loyer en toute simplicité.</p>
+                </div>
+                
+                <div class="project-features">
+                    <h3 class="features-title">Fonctionnalités principales:</h3>
+                    <ul class="features-list">
+                        <li>Gestion des propriétaires et locataires</li>
+                        <li>Génération automatique de quittances de loyer</li>
+                        <li>Suivi des paiements et échéances</li>
+                        <li>Comptes avec durée limitée (30 jours)</li>
+                        <li>Sauvegarde automatique des données</li>
+                        <li>Filtres avancés par statut et durée</li>
+                        <li>Tableaux de bord et statistiques</li>
+                        <li>Notifications d'expiration</li>
+                    </ul>
+                </div>
+                
+                <a href="compte maison.html" class="project-btn location-btn">
+                    <i class="fas fa-external-link-alt"></i> Gérer les Locations
                 </a>
             </div>
         </div>

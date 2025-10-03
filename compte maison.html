@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maison Pro - Gestion des Propriétaires</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .tagline {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 40px;
+        }
+
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Form Section */
+        .form-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px dashed #3498db;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60 0%, #219a52 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+        }
+
+        /* Display Section */
+        .display-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #e1e8ed;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 10px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            background: white;
+            font-size: 14px;
+        }
+
+        /* Accounts Grid */
+        .accounts-grid {
+            display: grid;
+            gap: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .account-card {
+            background: white;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .account-card:hover {
+            border-color: #3498db;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .account-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .account-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .account-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-expired {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .account-details {
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #6c757d;
+        }
+
+        .time-remaining {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .time-critical {
+            color: #dc3545;
+            animation: pulse 2s infinite;
+        }
+
+        .time-warning {
+            color: #ffc107;
+        }
+
+        .time-normal {
+            color: #28a745;
+        }
+
+        .tenants-list {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .tenants-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tenant-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .tenant-item:last-child {
+            border-bottom: none;
+        }
+
+        .tenant-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 5px;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Scrollbar */
+        .accounts-grid::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .accounts-grid::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .accounts-grid::-webkit-scrollbar-thumb {
+            background: #3498db;
+            border-radius: 10px;
+        }
+
+        .accounts-grid::-webkit-scrollbar-thumb:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-home"></i>
+                Maison Pro
+            </div>
+            <p class="tagline">Gestion professionnelle des propriétaires et locataires</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Form Section -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-user-plus"></i>
+                    Nouveau Propriétaire
+                </h2>
+                
+                <form id="ownerForm">
+                    <div class="form-group">
+                        <label for="ownerName"><i class="fas fa-user"></i> Nom du Propriétaire</label>
+                        <input type="text" id="ownerName" class="form-control" placeholder="Entrez le nom complet" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ownerEmail"><i class="fas fa-envelope"></i> Email</label>
+                        <input type="email" id="ownerEmail" class="form-control" placeholder="exemple@email.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ownerPhone"><i class="fas fa-phone"></i> Téléphone</label>
+                        <input type="tel" id="ownerPhone" class="form-control" placeholder="+228 XX XX XX XX" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="propertyAddress"><i class="fas fa-map-marker-alt"></i> Adresse de la Propriété</label>
+                        <input type="text" id="propertyAddress" class="form-control" placeholder="Adresse complète" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="propertyType"><i class="fas fa-building"></i> Type de Propriété</label>
+                        <select id="propertyType" class="form-control" required>
+                            <option value="">Sélectionnez le type</option>
+                            <option value="appartement">Appartement</option>
+                            <option value="maison">Maison</option>
+                            <option value="villa">Villa</option>
+                            <option value="studio">Studio</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Créer le Compte
+                    </button>
+                </form>
+
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 2px dashed #3498db;">
+                    <h3 class="section-title">
+                        <i class="fas fa-users"></i>
+                        Ajouter un Locataire
+                    </h3>
+                    
+                    <form id="tenantForm">
+                        <div class="form-group">
+                            <label for="ownerSelect"><i class="fas fa-user-tie"></i> Propriétaire</label>
+                            <select id="ownerSelect" class="form-control" required>
+                                <option value="">Sélectionnez un propriétaire</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tenantName"><i class="fas fa-user"></i> Nom du Locataire</label>
+                            <input type="text" id="tenantName" class="form-control" placeholder="Nom complet du locataire" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tenantPhone"><i class="fas fa-phone"></i> Téléphone Locataire</label>
+                            <input type="tel" id="tenantPhone" class="form-control" placeholder="+228 XX XX XX XX" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rentAmount"><i class="fas fa-money-bill-wave"></i> Montant du Loyer</label>
+                            <input type="number" id="rentAmount" class="form-control" placeholder="Montant en FCFA" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-user-plus"></i> Ajouter le Locataire
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Display Section -->
+            <div class="display-section">
+                <h2 class="section-title">
+                    <i class="fas fa-list"></i>
+                    Comptes Actifs
+                </h2>
+
+                <!-- Filter Section -->
+                <div class="filter-section">
+                    <div class="filter-group">
+                        <label for="statusFilter"><i class="fas fa-filter"></i> Filtre:</label>
+                        <select id="statusFilter" class="filter-select">
+                            <option value="all">Tous les comptes</option>
+                            <option value="active">Actifs</option>
+                            <option value="warning">Bientôt expirés</option>
+                            <option value="expired">Expirés</option>
+                        </select>
+
+                        <select id="timeFilter" class="filter-select">
+                            <option value="all">Toute durée</option>
+                            <option value="critical">Moins de 7 jours</option>
+                            <option value="warning">7-15 jours</option>
+                            <option value="normal">Plus de 15 jours</option>
+                        </select>
+
+                        <button id="resetFilter" class="btn btn-sm btn-warning">
+                            <i class="fas fa-redo"></i> Réinitialiser
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Accounts Grid -->
+                <div class="accounts-grid" id="accountsGrid">
+                    <!-- Les comptes seront générés dynamiquement ici -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats-section">
+            <div class="stat-card">
+                <div class="stat-number" id="totalOwners">0</div>
+                <div class="stat-label">Propriétaires</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalTenants">0</div>
+                <div class="stat-label">Locataires</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="activeAccounts">0</div>
+                <div class="stat-label">Comptes Actifs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="expiredAccounts">0</div>
+                <div class="stat-label">Comptes Expirés</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Système de sauvegarde automatique
+        class AccountManager {
+            constructor() {
+                this.owners = this.loadFromStorage('maisonPro_owners') || [];
+                this.tenants = this.loadFromStorage('maisonPro_tenants') || [];
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.updateDisplay();
+                this.startAutoSave();
+                this.startTimerUpdate();
+            }
+
+            setupEventListeners() {
+                // Formulaire propriétaire
+                document.getElementById('ownerForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.createOwner();
+                });
+
+                // Formulaire locataire
+                document.getElementById('tenantForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.createTenant();
+                });
+
+                // Filtres
+                document.getElementById('statusFilter').addEventListener('change', () => this.updateDisplay());
+                document.getElementById('timeFilter').addEventListener('change', () => this.updateDisplay());
+                document.getElementById('resetFilter').addEventListener('click', () => this.resetFilters());
+            }
+
+            createOwner() {
+                const owner = {
+                    id: Date.now().toString(),
+                    name: document.getElementById('ownerName').value,
+                    email: document.getElementById('ownerEmail').value,
+                    phone: document.getElementById('ownerPhone').value,
+                    propertyAddress: document.getElementById('propertyAddress').value,
+                    propertyType: document.getElementById('propertyType').value,
+                    createdAt: new Date().toISOString(),
+                    expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 jours
+                };
+
+                this.owners.push(owner);
+                this.saveToStorage('maisonPro_owners', this.owners);
+                this.updateOwnerSelect();
+                this.updateDisplay();
+                this.showNotification('Propriétaire créé avec succès!', 'success');
+                document.getElementById('ownerForm').reset();
+            }
+
+            createTenant() {
+                const ownerId = document.getElementById('ownerSelect').value;
+                if (!ownerId) {
+                    this.showNotification('Veuillez sélectionner un propriétaire', 'error');
+                    return;
+                }
+
+                const tenant = {
+                    id: Date.now().toString(),
+                    ownerId: ownerId,
+                    name: document.getElementById('tenantName').value,
+                    phone: document.getElementById('tenantPhone').value,
+                    rentAmount: document.getElementById('rentAmount').value,
+                    createdAt: new Date().toISOString()
+                };
+
+                this.tenants.push(tenant);
+                this.saveToStorage('maisonPro_tenants', this.tenants);
+                this.updateDisplay();
+                this.showNotification('Locataire ajouté avec succès!', 'success');
+                document.getElementById('tenantForm').reset();
+            }
+
+            updateOwnerSelect() {
+                const select = document.getElementById('ownerSelect');
+                select.innerHTML = '<option value="">Sélectionnez un propriétaire</option>';
+                
+                this.owners.forEach(owner => {
+                    if (this.getDaysRemaining(owner.expiresAt) > 0) {
+                        const option = document.createElement('option');
+                        option.value = owner.id;
+                        option.textContent = `${owner.name} - ${owner.propertyAddress}`;
+                        select.appendChild(option);
+                    }
+                });
+            }
+
+            getDaysRemaining(expiresAt) {
+                const now = new Date();
+                const expiry = new Date(expiresAt);
+                const diff = expiry - now;
+                return Math.ceil(diff / (1000 * 60 * 60 * 24));
+            }
+
+            getTimeStatus(days) {
+                if (days <= 0) return 'expired';
+                if (days <= 7) return 'critical';
+                if (days <= 15) return 'warning';
+                return 'normal';
+            }
+
+            updateDisplay() {
+                const accountsGrid = document.getElementById('accountsGrid');
+                const statusFilter = document.getElementById('statusFilter').value;
+                const timeFilter = document.getElementById('timeFilter').value;
+
+                accountsGrid.innerHTML = '';
+
+                this.owners.forEach(owner => {
+                    const daysRemaining = this.getDaysRemaining(owner.expiresAt);
+                    const timeStatus = this.getTimeStatus(daysRemaining);
+                    const status = daysRemaining <= 0 ? 'expired' : 
+                                  daysRemaining <= 7 ? 'warning' : 'active';
+
+                    // Appliquer les filtres
+                    if (statusFilter !== 'all' && statusFilter !== status) return;
+                    if (timeFilter !== 'all' && timeFilter !== timeStatus) return;
+
+                    const ownerTenants = this.tenants.filter(t => t.ownerId === owner.id);
+
+                    const accountCard = document.createElement('div');
+                    accountCard.className = `account-card fade-in`;
+                    accountCard.innerHTML = `
+                        <div class="account-header">
+                            <div class="account-name">${owner.name}</div>
+                            <div class="account-status status-${status}">
+                                ${status === 'active' ? 'Actif' : status === 'warning' ? 'Bientôt expiré' : 'Expiré'}
+                            </div>
+                        </div>
+                        
+                        <div class="account-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Email:</span>
+                                <span>${owner.email}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Téléphone:</span>
+                                <span>${owner.phone}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Propriété:</span>
+                                <span>${owner.propertyType} - ${owner.propertyAddress}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Temps restant:</span>
+                                <span class="time-remaining time-${timeStatus}">
+                                    ${daysRemaining > 0 ? `${daysRemaining} jours` : 'Expiré'}
+                                </span>
+                            </div>
+                        </div>
+
+                        ${ownerTenants.length > 0 ? `
+                            <div class="tenants-list">
+                                <div class="tenants-title">
+                                    <i class="fas fa-users"></i>
+                                    Locataires (${ownerTenants.length})
+                                </div>
+                                ${ownerTenants.map(tenant => `
+                                    <div class="tenant-item">
+                                        <div>
+                                            <strong>${tenant.name}</strong><br>
+                                            <small>${tenant.phone} - ${tenant.rentAmount} FCFA</small>
+                                        </div>
+                                        <div class="tenant-actions">
+                                            <button class="btn btn-sm btn-danger" onclick="accountManager.removeTenant('${tenant.id}')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : `
+                            <div class="tenants-list">
+                                <div class="tenants-title">
+                                    <i class="fas fa-info-circle"></i>
+                                    Aucun locataire enregistré
+                                </div>
+                            </div>
+                        `}
+
+                        <div style="margin-top: 15px; display: flex; gap: 10px;">
+                            <button class="btn btn-sm btn-warning" onclick="accountManager.extendAccount('${owner.id}')">
+                                <i class="fas fa-calendar-plus"></i> Prolonger
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="accountManager.removeOwner('${owner.id}')">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </button>
+                        </div>
+                    `;
+
+                    accountsGrid.appendChild(accountCard);
+                });
+
+                this.updateStats();
+            }
+
+            updateStats() {
+                document.getElementById('totalOwners').textContent = this.owners.length;
+                document.getElementById('totalTenants').textContent = this.tenants.length;
+                
+                const activeAccounts = this.owners.filter(owner => 
+                    this.getDaysRemaining(owner.expiresAt) > 0
+                ).length;
+                
+                const expiredAccounts = this.owners.length - activeAccounts;
+
+                document.getElementById('activeAccounts').textContent = activeAccounts;
+                document.getElementById('expiredAccounts').textContent = expiredAccounts;
+            }
+
+            removeOwner(ownerId) {
+                if (confirm('Êtes-vous sûr de vouloir supprimer ce propriétaire et tous ses locataires ?')) {
+                    this.owners = this.owners.filter(owner => owner.id !== ownerId);
+                    this.tenants = this.tenants.filter(tenant => tenant.ownerId !== ownerId);
+                    this.saveToStorage('maisonPro_owners', this.owners);
+                    this.saveToStorage('maisonPro_tenants', this.tenants);
+                    this.updateOwnerSelect();
+                    this.updateDisplay();
+                    this.showNotification('Propriétaire supprimé avec succès', 'success');
+                }
+            }
+
+            removeTenant(tenantId) {
+                if (confirm('Êtes-vous sûr de vouloir supprimer ce locataire ?')) {
+                    this.tenants = this.tenants.filter(tenant => tenant.id !== tenantId);
+                    this.saveToStorage('maisonPro_tenants', this.tenants);
+                    this.updateDisplay();
+                    this.showNotification('Locataire supprimé avec succès', 'success');
+                }
+            }
+
+            extendAccount(ownerId) {
+                const owner = this.owners.find(o => o.id === ownerId);
+                if (owner) {
+                    owner.expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+                    this.saveToStorage('maisonPro_owners', this.owners);
+                    this.updateDisplay();
+                    this.showNotification('Compte prolongé de 30 jours', 'success');
+                }
+            }
+
+            resetFilters() {
+                document.getElementById('statusFilter').value = 'all';
+                document.getElementById('timeFilter').value = 'all';
+                this.updateDisplay();
+            }
+
+            startAutoSave() {
+                // Sauvegarde automatique toutes les 30 secondes
+                setInterval(() => {
+                    this.saveToStorage('maisonPro_owners', this.owners);
+                    this.saveToStorage('maisonPro_tenants', this.tenants);
+                }, 30000);
+            }
+
+            startTimerUpdate() {
+                // Mise à jour du compteur toutes les minute
+                setInterval(() => {
+                    this.updateDisplay();
+                }, 60000);
+            }
+
+            saveToStorage(key, data) {
+                localStorage.setItem(key, JSON.stringify(data));
+            }
+
+            loadFromStorage(key) {
+                const data = localStorage.getItem(key);
+                return data ? JSON.parse(data) : null;
+            }
+
+            showNotification(message, type) {
+                // Créer une notification simple
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 15px 20px;
+                    background: ${type === 'success' ? '#28a745' : '#dc3545'};
+                    color: white;
+                    border-radius: 8px;
+                    z-index: 1000;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                    animation: slideIn 0.3s ease;
+                `;
+                notification.textContent = message;
+                document.body.appendChild(notification);
+
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+        }
+
+        // Initialiser l'application
+        const accountManager = new AccountManager();
+
+        // Ajouter le CSS pour l'animation de notification
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

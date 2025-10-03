@@ -110,6 +110,63 @@
             box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
         }
 
+        .password-group {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 42px;
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .credentials-info {
+            background: #e8f4fd;
+            border: 1px solid #b3d9ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .credentials-display {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .credential-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 5px 0;
+        }
+
+        .copy-btn {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .copy-btn:hover {
+            background: #138496;
+        }
+
         .btn {
             padding: 15px 30px;
             border: none;
@@ -200,7 +257,7 @@
 
         .account-header {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
         }
@@ -268,6 +325,23 @@
             color: #28a745;
         }
 
+        .credentials-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #3498db;
+        }
+
+        .credentials-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .tenants-list {
             background: #f8f9fa;
             padding: 15px;
@@ -317,6 +391,11 @@
             color: #212529;
         }
 
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
         /* Stats Section */
         .stats-section {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -344,6 +423,50 @@
         .stat-label {
             font-size: 14px;
             opacity: 0.9;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6c757d;
         }
 
         /* Animations */
@@ -432,6 +555,20 @@
                             <option value="villa">Villa</option>
                             <option value="studio">Studio</option>
                         </select>
+                    </div>
+
+                    <div class="form-group password-group">
+                        <label for="ownerPassword"><i class="fas fa-key"></i> Mot de passe</label>
+                        <input type="password" id="ownerPassword" class="form-control" placeholder="Choisissez un mot de passe sécurisé" required>
+                        <button type="button" class="toggle-password" id="togglePassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+
+                    <div class="credentials-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Identifiant généré automatiquement</strong><br>
+                        Un identifiant unique sera créé pour ce propriétaire
                     </div>
 
                     <button type="submit" class="btn btn-primary">
@@ -534,6 +671,27 @@
         </div>
     </div>
 
+    <!-- Modal pour afficher les identifiants -->
+    <div class="modal" id="credentialsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-key"></i>
+                    Identifiants de Connexion
+                </h3>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <div id="modalCredentialsContent">
+                <!-- Contenu généré dynamiquement -->
+            </div>
+            <div style="margin-top: 20px; text-align: center;">
+                <button class="btn btn-primary" id="closeModalBtn">
+                    <i class="fas fa-check"></i> Compris
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Système de sauvegarde automatique
         class AccountManager {
@@ -567,11 +725,43 @@
                 document.getElementById('statusFilter').addEventListener('change', () => this.updateDisplay());
                 document.getElementById('timeFilter').addEventListener('change', () => this.updateDisplay());
                 document.getElementById('resetFilter').addEventListener('click', () => this.resetFilters());
+
+                // Toggle password
+                document.getElementById('togglePassword').addEventListener('click', () => this.togglePassword());
+
+                // Modal
+                document.getElementById('closeModal').addEventListener('click', () => this.closeModal());
+                document.getElementById('closeModalBtn').addEventListener('click', () => this.closeModal());
+
+                // Fermer modal en cliquant à l'extérieur
+                document.getElementById('credentialsModal').addEventListener('click', (e) => {
+                    if (e.target.id === 'credentialsModal') {
+                        this.closeModal();
+                    }
+                });
+            }
+
+            generateUsername(name) {
+                const baseName = name.toLowerCase().replace(/\s+/g, '.');
+                const randomNum = Math.floor(Math.random() * 1000);
+                return `${baseName}.${randomNum}`;
+            }
+
+            generateOwnerId() {
+                return 'PROP_' + Date.now().toString() + '_' + Math.random().toString(36).substr(2, 5);
             }
 
             createOwner() {
+                const password = document.getElementById('ownerPassword').value;
+                if (password.length < 6) {
+                    this.showNotification('Le mot de passe doit contenir au moins 6 caractères', 'error');
+                    return;
+                }
+
                 const owner = {
-                    id: Date.now().toString(),
+                    id: this.generateOwnerId(),
+                    username: this.generateUsername(document.getElementById('ownerName').value),
+                    password: password,
                     name: document.getElementById('ownerName').value,
                     email: document.getElementById('ownerEmail').value,
                     phone: document.getElementById('ownerPhone').value,
@@ -585,7 +775,7 @@
                 this.saveToStorage('maisonPro_owners', this.owners);
                 this.updateOwnerSelect();
                 this.updateDisplay();
-                this.showNotification('Propriétaire créé avec succès!', 'success');
+                this.showCredentials(owner);
                 document.getElementById('ownerForm').reset();
             }
 
@@ -690,6 +880,25 @@
                             </div>
                         </div>
 
+                        <div class="credentials-section">
+                            <div class="credentials-title">
+                                <i class="fas fa-key"></i>
+                                Identifiants de connexion
+                            </div>
+                            <div class="credential-item">
+                                <span><strong>Identifiant:</strong> ${owner.username}</span>
+                                <button class="copy-btn" onclick="accountManager.copyToClipboard('${owner.username}')">
+                                    <i class="fas fa-copy"></i> Copier
+                                </button>
+                            </div>
+                            <div class="credential-item">
+                                <span><strong>Mot de passe:</strong> ••••••••</span>
+                                <button class="btn-sm btn-info" onclick="accountManager.showCredentialsModal('${owner.id}')">
+                                    <i class="fas fa-eye"></i> Voir
+                                </button>
+                            </div>
+                        </div>
+
                         ${ownerTenants.length > 0 ? `
                             <div class="tenants-list">
                                 <div class="tenants-title">
@@ -719,9 +928,12 @@
                             </div>
                         `}
 
-                        <div style="margin-top: 15px; display: flex; gap: 10px;">
+                        <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
                             <button class="btn btn-sm btn-warning" onclick="accountManager.extendAccount('${owner.id}')">
                                 <i class="fas fa-calendar-plus"></i> Prolonger
+                            </button>
+                            <button class="btn btn-sm btn-info" onclick="accountManager.showCredentialsModal('${owner.id}')">
+                                <i class="fas fa-key"></i> Identifiants
                             </button>
                             <button class="btn btn-sm btn-danger" onclick="accountManager.removeOwner('${owner.id}')">
                                 <i class="fas fa-trash"></i> Supprimer
@@ -733,6 +945,93 @@
                 });
 
                 this.updateStats();
+            }
+
+            showCredentials(owner) {
+                const modalContent = document.getElementById('modalCredentialsContent');
+                modalContent.innerHTML = `
+                    <div class="credentials-display">
+                        <div style="margin-bottom: 15px;">
+                            <strong>Compte créé avec succès pour ${owner.name}</strong>
+                        </div>
+                        <div class="credential-item">
+                            <span><strong>Identifiant:</strong> ${owner.username}</span>
+                            <button class="copy-btn" onclick="accountManager.copyToClipboard('${owner.username}')">
+                                <i class="fas fa-copy"></i> Copier
+                            </button>
+                        </div>
+                        <div class="credential-item">
+                            <span><strong>Mot de passe:</strong> ${owner.password}</span>
+                            <button class="copy-btn" onclick="accountManager.copyToClipboard('${owner.password}')">
+                                <i class="fas fa-copy"></i> Copier
+                            </button>
+                        </div>
+                        <div style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 5px; font-size: 12px;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Important:</strong> Notez ces identifiants. Ils ne seront plus affichés après fermeture de cette fenêtre.
+                        </div>
+                    </div>
+                `;
+                document.getElementById('credentialsModal').style.display = 'flex';
+            }
+
+            showCredentialsModal(ownerId) {
+                const owner = this.owners.find(o => o.id === ownerId);
+                if (owner) {
+                    const modalContent = document.getElementById('modalCredentialsContent');
+                    modalContent.innerHTML = `
+                        <div class="credentials-display">
+                            <div style="margin-bottom: 15px;">
+                                <strong>Identifiants de connexion pour ${owner.name}</strong>
+                            </div>
+                            <div class="credential-item">
+                                <span><strong>Identifiant:</strong> ${owner.username}</span>
+                                <button class="copy-btn" onclick="accountManager.copyToClipboard('${owner.username}')">
+                                    <i class="fas fa-copy"></i> Copier
+                                </button>
+                            </div>
+                            <div class="credential-item">
+                                <span><strong>Mot de passe:</strong> ${owner.password}</span>
+                                <button class="copy-btn" onclick="accountManager.copyToClipboard('${owner.password}')">
+                                    <i class="fas fa-copy"></i> Copier
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('credentialsModal').style.display = 'flex';
+                }
+            }
+
+            closeModal() {
+                document.getElementById('credentialsModal').style.display = 'none';
+            }
+
+            copyToClipboard(text) {
+                navigator.clipboard.writeText(text).then(() => {
+                    this.showNotification('Copié dans le presse-papier!', 'success');
+                }).catch(() => {
+                    // Fallback pour les anciens navigateurs
+                    const textArea = document.createElement('textarea');
+                    textArea.value = text;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    this.showNotification('Copié dans le presse-papier!', 'success');
+                });
+            }
+
+            togglePassword() {
+                const passwordInput = document.getElementById('ownerPassword');
+                const toggleIcon = document.getElementById('togglePassword').querySelector('i');
+                
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    toggleIcon.className = 'fas fa-eye-slash';
+                } else {
+                    passwordInput.type = 'password';
+                    toggleIcon.className = 'fas fa-eye';
+                }
             }
 
             updateStats() {

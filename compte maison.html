@@ -110,28 +110,19 @@
             box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
         }
 
-        .password-group {
-            position: relative;
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 15px;
-            top: 42px;
-            background: none;
-            border: none;
-            color: #6c757d;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .credentials-info {
+        .auto-generate-info {
             background: #e8f4fd;
             border: 1px solid #b3d9ff;
             border-radius: 8px;
             padding: 15px;
             margin-top: 15px;
             font-size: 14px;
+            text-align: center;
+        }
+
+        .auto-generate-info i {
+            color: #3498db;
+            margin-right: 8px;
         }
 
         .credentials-display {
@@ -557,18 +548,10 @@
                         </select>
                     </div>
 
-                    <div class="form-group password-group">
-                        <label for="ownerPassword"><i class="fas fa-key"></i> Mot de passe</label>
-                        <input type="password" id="ownerPassword" class="form-control" placeholder="Choisissez un mot de passe sécurisé" required>
-                        <button type="button" class="toggle-password" id="togglePassword">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-
-                    <div class="credentials-info">
-                        <i class="fas fa-info-circle"></i>
-                        <strong>Identifiant généré automatiquement</strong><br>
-                        Un identifiant unique sera créé pour ce propriétaire
+                    <div class="auto-generate-info">
+                        <i class="fas fa-key"></i>
+                        <strong>Génération automatique</strong><br>
+                        Un identifiant et un mot de passe sécurisé seront générés automatiquement
                     </div>
 
                     <button type="submit" class="btn btn-primary">
@@ -677,7 +660,7 @@
             <div class="modal-header">
                 <h3 class="modal-title">
                     <i class="fas fa-key"></i>
-                    Identifiants de Connexion
+                    Identifiants de Connexion Générés
                 </h3>
                 <button class="close-modal" id="closeModal">&times;</button>
             </div>
@@ -726,9 +709,6 @@
                 document.getElementById('timeFilter').addEventListener('change', () => this.updateDisplay());
                 document.getElementById('resetFilter').addEventListener('click', () => this.resetFilters());
 
-                // Toggle password
-                document.getElementById('togglePassword').addEventListener('click', () => this.togglePassword());
-
                 // Modal
                 document.getElementById('closeModal').addEventListener('click', () => this.closeModal());
                 document.getElementById('closeModalBtn').addEventListener('click', () => this.closeModal());
@@ -742,27 +722,42 @@
             }
 
             generateUsername(name) {
-                const baseName = name.toLowerCase().replace(/\s+/g, '.');
-                const randomNum = Math.floor(Math.random() * 1000);
+                // Créer un identifiant basé sur le nom
+                const baseName = name.toLowerCase()
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Supprimer les accents
+                    .replace(/\s+/g, '.') // Remplacer les espaces par des points
+                    .replace(/[^a-z0-9.]/g, ''); // Supprimer les caractères spéciaux
+                
+                const randomNum = Math.floor(100 + Math.random() * 900); // Numéro entre 100 et 999
                 return `${baseName}.${randomNum}`;
             }
 
+            generatePassword() {
+                // Générer un mot de passe sécurisé de 12 caractères
+                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*';
+                let password = '';
+                for (let i = 0; i < 12; i++) {
+                    password += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                return password;
+            }
+
             generateOwnerId() {
-                return 'PROP_' + Date.now().toString() + '_' + Math.random().toString(36).substr(2, 5);
+                return 'PROP_' + Date.now().toString() + '_' + Math.random().toString(36).substr(2, 5).toUpperCase();
             }
 
             createOwner() {
-                const password = document.getElementById('ownerPassword').value;
-                if (password.length < 6) {
-                    this.showNotification('Le mot de passe doit contenir au moins 6 caractères', 'error');
-                    return;
-                }
+                const ownerName = document.getElementById('ownerName').value;
+                
+                // Générer automatiquement identifiant et mot de passe
+                const username = this.generateUsername(ownerName);
+                const password = this.generatePassword();
 
                 const owner = {
                     id: this.generateOwnerId(),
-                    username: this.generateUsername(document.getElementById('ownerName').value),
+                    username: username,
                     password: password,
-                    name: document.getElementById('ownerName').value,
+                    name: ownerName,
                     email: document.getElementById('ownerEmail').value,
                     phone: document.getElementById('ownerPhone').value,
                     propertyAddress: document.getElementById('propertyAddress').value,
@@ -951,8 +946,9 @@
                 const modalContent = document.getElementById('modalCredentialsContent');
                 modalContent.innerHTML = `
                     <div class="credentials-display">
-                        <div style="margin-bottom: 15px;">
-                            <strong>Compte créé avec succès pour ${owner.name}</strong>
+                        <div style="margin-bottom: 15px; text-align: center;">
+                            <i class="fas fa-check-circle" style="color: #28a745; font-size: 48px; margin-bottom: 10px;"></i>
+                            <div><strong>Compte créé avec succès pour ${owner.name}</strong></div>
                         </div>
                         <div class="credential-item">
                             <span><strong>Identifiant:</strong> ${owner.username}</span>
@@ -1019,19 +1015,6 @@
                     document.body.removeChild(textArea);
                     this.showNotification('Copié dans le presse-papier!', 'success');
                 });
-            }
-
-            togglePassword() {
-                const passwordInput = document.getElementById('ownerPassword');
-                const toggleIcon = document.getElementById('togglePassword').querySelector('i');
-                
-                if (passwordInput.type === 'password') {
-                    passwordInput.type = 'text';
-                    toggleIcon.className = 'fas fa-eye-slash';
-                } else {
-                    passwordInput.type = 'password';
-                    toggleIcon.className = 'fas fa-eye';
-                }
             }
 
             updateStats() {
